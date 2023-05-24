@@ -78,8 +78,21 @@ public class Account {
         byte[] dig =  digest.digest(Arrays.copyOfRange(publicKeyBytes,1,publicKeyBytes.length));
 
         String address = "0x" + Util.bytesToHex(Arrays.copyOfRange(dig,12,dig.length));
-        String privateKeyHex =  privateKey.getD().toString(16);
+        String privateKeyHex =  adjustTo64(privateKey.getD().toString(16));
         return new Account(address,privateKeyHex);
+    }
+
+    private static String adjustTo64(String s) {
+        switch (s.length()) {
+            case 62:
+                return "00" + s;
+            case 63:
+                return "0" + s;
+            case 64:
+                return s;
+            default:
+                throw new IllegalArgumentException("not a valid key: " + s);
+        }
     }
 
     //这个函数，没调试好，还有问题
