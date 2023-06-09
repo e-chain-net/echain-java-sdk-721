@@ -83,16 +83,14 @@ public class Account {
     }
 
     private static String adjustTo64(String s) {
-        switch (s.length()) {
-            case 62:
-                return "00" + s;
-            case 63:
-                return "0" + s;
-            case 64:
-                return s;
-            default:
-                throw new IllegalArgumentException("not a valid key: " + s);
+        if(s.length() < 64){
+            String prefix = "";
+            for(int i=0; i<64 - s.length(); i++){
+                prefix += "0";
+            }
+            s = prefix + s;
         }
+        return s;
     }
 
     //这个函数，没调试好，还有问题
