@@ -79,7 +79,16 @@ public class EChainSDK {
         String input = AbiUtil.encodeBurn(tokenID);
         return createSignedTx(privateHex,contractAddress,input,blockNumber);
     }
-
+    /**
+     * 签名授权交易
+     * @param operator   被授权方地址（一般指平台方账户）
+     * @param approved   true：授权，false：取消授权
+     * @param contractAddress   合约地址
+     * @param privateHex        账户私钥
+     * @param blockNumber       当前链上最新区块号
+     * @return          TxPair，包含交易哈希与签名后的交易体
+     * @throws JniException
+     */
     public TxPair signSetApproveForAll(String operator,
                               boolean approved,
                               String contractAddress,
