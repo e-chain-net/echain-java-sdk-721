@@ -15,9 +15,9 @@ public class TestSign {
     public static Account user2 = new Account("0xf53baf7526a2c8aec2f185ed48e94316e29e9e95","42e548a753fe86d0937372b24ae472559966929fb3f8d0672376849d23f6a43d");
     public static EChainSDK sdk = new EChainSDK();
     public static void main(String args[]) throws JniException {
-        BigInteger tokenId = BigInteger.valueOf(1002);
+        BigInteger tokenId = BigInteger.valueOf(1003);
 
-        long blockNumber = 29791;
+        long blockNumber = 146598;
 
         TxPair mintRes = sdk.signMint(user1.getAddress(),tokenId,contractAddress,owner.getPrivateKey(),blockNumber);
         System.out.println("Mint txHash:" + mintRes.getTxHash());
@@ -30,5 +30,20 @@ public class TestSign {
         TxPair burnRes = sdk.signBurn(tokenId,contractAddress,user2.getPrivateKey(),blockNumber);
         System.out.println("Burn txHash:" + burnRes.getTxHash());
         System.out.println("Burn signed:" + burnRes.getSignedTx());
+
+        //授权相关，user1授权给owner
+        TxPair approveRes = sdk.signSetApproveForAll(owner.getAddress(),true,contractAddress,user1.getPrivateKey(),blockNumber);
+        System.out.println("Approve txHash:" + approveRes.getTxHash());
+        System.out.println("Approve signed:" + approveRes.getSignedTx());
+
+        tokenId = BigInteger.valueOf(1004);
+        //铸造给user1
+        mintRes = sdk.signMint(user1.getAddress(),tokenId,contractAddress,owner.getPrivateKey(),blockNumber);
+        System.out.println("Mint2 txHash:" + mintRes.getTxHash());
+        System.out.println("Mint2 signed:" + mintRes.getSignedTx());
+        //由owner发起将user1的token转移给user2
+        transferRes = sdk.signTransferFrom(user1.getAddress(),user2.getAddress(),tokenId,contractAddress,owner.getPrivateKey(),blockNumber);
+        System.out.println("Transfer2 txHash:" + transferRes.getTxHash());
+        System.out.println("Transfer2 signed:" + transferRes.getSignedTx());
     }
 }

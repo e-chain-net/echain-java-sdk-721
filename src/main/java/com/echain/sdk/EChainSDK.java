@@ -80,6 +80,16 @@ public class EChainSDK {
         return createSignedTx(privateHex,contractAddress,input,blockNumber);
     }
 
+    public TxPair signSetApproveForAll(String operator,
+                              boolean approved,
+                              String contractAddress,
+                              String privateHex,
+                              long blockNumber) throws JniException
+    {
+        String input = AbiUtil.encodeSetApproveForAll(operator,approved);
+        return createSignedTx(privateHex,contractAddress,input,blockNumber);
+    }
+
     private TxPair createSignedTx(String privateHex, String contractAddress, String input, long blockNumber) throws JniException {
         long jniKeyPair = Util.convertJniKeyPair(privateHex);
         long blockLimit = blockNumber + 900;

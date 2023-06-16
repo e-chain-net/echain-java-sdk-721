@@ -2,6 +2,7 @@ package com.echain.util;
 
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.DynamicBytes;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.generated.Uint256;
@@ -41,6 +42,15 @@ public class AbiUtil {
                 Arrays.asList(tokenId256),         // Input parameters
                 Collections.emptyList());  // Output parameter(s)
 
+        return FunctionEncoder.encode(function);
+    }
+
+    public static String encodeSetApproveForAll(String operator,boolean approved){
+        Function function = new Function(
+                "setApprovalForAll",
+                Arrays.asList(new Address(operator),
+                        new Bool(approved)),
+                Collections.emptyList());
         return FunctionEncoder.encode(function);
     }
 }

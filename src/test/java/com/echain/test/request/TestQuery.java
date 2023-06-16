@@ -34,6 +34,9 @@ public class TestQuery {
 
         //查询token拥有者
         TestOwnerOf();
+
+        //查询授权信息
+        TestIsApproveForAll();
     }
 
 
@@ -163,6 +166,49 @@ public class TestQuery {
                 String output = obj.getJSONObject("data").getJSONObject("result").getString("output");
                 String owner = "0x" + output.substring(26);
                 return owner;
+            }
+        }
+    }
+
+    private static void TestIsApproveForAll(){
+        System.out.println("");
+        String contractOwner = "0x2ebca12753f7e9526ef76f2698b7124e37e5ce87";
+        String user1 = "0x95a1a99be965777d8b0e42fe5ec1c161f6c3a5da";
+        String contractAddress = "0x18f8597118953b3374c2515ecf799ce4750361bb";
+        System.out.println("请求授权查询：");
+        try{
+            boolean ret = getIsApproveForAll(user1,contractOwner,contractAddress);
+            System.out.println("IsApproveForAll return:" + ret);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public static String encodeIsApproveForAll(String owner,String operator){
+        Function function = new Function(
+                "isApprovedForAll",                      // Function name
+                Arrays.asList(new Address(owner),new Address(operator)),         // Input parameters
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));  // Output parameter(s)
+
+        return FunctionEncoder.encode(function);
+    }
+
+    private static boolean getIsApproveForAll(String owner,String operator,String contractAddress) throws Exception {
+        String input = encodeIsApproveForAll(owner,operator);
+        String payload = Util.formatQueryPayload("call",new ArrayList<>(Arrays.asList(contractAddress,input)));
+//        System.out.println(payload.toString());
+        String response = HttpRequest.sendPost(Define.UrlQuery,payload);
+        System.out.println(response);
+        JSONObject obj = new JSONObject(response);
+        if(!obj.getString("code").equals("EC000000")){
+            throw new Exception("请求isApprovedForAll："+obj.getString("message"));
+        }else{
+            int status = obj.getJSONObject("data").getJSONObject("result").getInt("status");
+            if(status != 0){
+                throw new Exception("请求ownerOf 失败，status="+status);
+            }else{
+                String output = obj.getJSONObject("data").getJSONObject("result").getString("output");
+                BigInteger value = new BigInteger(output.substring(2),16);
+                return value.intValue() == 1;
             }
         }
     }
