@@ -4,10 +4,12 @@ import com.echain.util.Util;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.web3j.abi.FunctionEncoder;
+import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Uint256;
 
 import java.math.BigInteger;
@@ -37,6 +39,9 @@ public class TestQuery {
 
         //查询授权信息
         TestIsApproveForAll();
+
+        //查询DID doc-url
+        TestDIDDocUrl();
     }
 
 
@@ -183,6 +188,7 @@ public class TestQuery {
             e.printStackTrace();
         }
     }
+
     public static String encodeIsApproveForAll(String owner,String operator){
         Function function = new Function(
                 "isApprovedForAll",                      // Function name
@@ -204,11 +210,59 @@ public class TestQuery {
         }else{
             int status = obj.getJSONObject("data").getJSONObject("result").getInt("status");
             if(status != 0){
-                throw new Exception("请求ownerOf 失败，status="+status);
+                throw new Exception("请求isApprovedForAll 失败，status="+status);
             }else{
                 String output = obj.getJSONObject("data").getJSONObject("result").getString("output");
                 BigInteger value = new BigInteger(output.substring(2),16);
                 return value.intValue() == 1;
+            }
+        }
+    }
+
+    private static void TestDIDDocUrl(){
+        System.out.println("");
+        String didContractAddress = "0x11c7afd80560f72891df3ab8969e5b524d738f04";
+        String user1Address = "0x95a1a99be965777d8b0e42fe5ec1c161f6c3a5da";
+        System.out.println("请求did查询：");
+        try{
+            String ret = resolveDID(user1Address,didContractAddress);
+            System.out.println("resolveDID return:" + ret);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+//    public static String encodeResolveDID(String id){
+//        Function function = new Function(
+//                "resolveDID",                      // Function name
+//                Arrays.asList(new Address(id)),         // Input parameters
+//                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));  // Output parameter(s)
+//
+//        return FunctionEncoder.encode(function);
+//    }
+
+    private static String resolveDID(String id,String contractAddress) throws Exception {
+        Function function = new Function(
+                "resolveDID",                      // Function name
+                Arrays.asList(new Address(id)),         // Input parameters
+                Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}));  // Output parameter(s)
+        String input = FunctionEncoder.encode(function);
+        String payload = Util.formatQueryPayload("call",new ArrayList<>(Arrays.asList(contractAddress,input)));
+//        System.out.println(payload.toString());
+        String response = HttpRequest.sendPost(Define.UrlQuery,payload);
+        System.out.println(response);
+        JSONObject obj = new JSONObject(response);
+        if(!obj.getString("code").equals("EC000000")){
+            throw new Exception("请求resolveDID："+obj.getString("message"));
+        }else{
+            int status = obj.getJSONObject("data").getJSONObject("result").getInt("status");
+            if(status != 0){
+                throw new Exception("请求resolveDID 失败，status="+status);
+            }else{
+                String output = obj.getJSONObject("data").getJSONObject("result").getString("output");
+                List<Type> result = FunctionReturnDecoder.decode(output,function.getOutputParameters());
+                Utf8String docUrl = (Utf8String) result.get(0);
+                return docUrl.getValue();
             }
         }
     }

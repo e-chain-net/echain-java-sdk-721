@@ -98,6 +98,25 @@ public class EChainSDK {
         String input = AbiUtil.encodeSetApproveForAll(operator,approved);
         return createSignedTx(privateHex,contractAddress,input,blockNumber);
     }
+    /**
+     * 签名DID注册交易
+     * @param id                要注册的账户地址
+     * @param docUrl            账户地址对应的DID文档url
+     * @param contractAddress   合约地址
+     * @param privateHex        账户私钥
+     * @param blockNumber       当前链上最新区块号
+     * @return          TxPair，包含交易哈希与签名后的交易体
+     * @throws JniException
+     */
+    public TxPair signRegisterDID(String id,
+                                  String docUrl,
+                                  String contractAddress,
+                                  String privateHex,
+                                  long blockNumber) throws JniException
+    {
+        String input = AbiUtil.encodeRegisterDID(id,docUrl);
+        return createSignedTx(privateHex,contractAddress,input,blockNumber);
+    }
 
     private TxPair createSignedTx(String privateHex, String contractAddress, String input, long blockNumber) throws JniException {
         long jniKeyPair = Util.convertJniKeyPair(privateHex);

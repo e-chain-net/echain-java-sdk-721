@@ -17,7 +17,7 @@ public class TestSign {
     public static void main(String args[]) throws JniException {
         BigInteger tokenId = BigInteger.valueOf(1003);
 
-        long blockNumber = 146598;
+        long blockNumber = 691660;
 
         TxPair mintRes = sdk.signMint(user1.getAddress(),tokenId,contractAddress,owner.getPrivateKey(),blockNumber);
         System.out.println("Mint txHash:" + mintRes.getTxHash());
@@ -45,5 +45,10 @@ public class TestSign {
         transferRes = sdk.signTransferFrom(user1.getAddress(),user2.getAddress(),tokenId,contractAddress,owner.getPrivateKey(),blockNumber);
         System.out.println("Transfer2 txHash:" + transferRes.getTxHash());
         System.out.println("Transfer2 signed:" + transferRes.getSignedTx());
+
+        String didContractAddress = "0x11c7afd80560f72891df3ab8969e5b524d738f04";
+        TxPair didPair = sdk.signRegisterDID(user1.getAddress(),"https://www.bing.com/?mkt=zh-CN",didContractAddress,owner.getPrivateKey(),blockNumber);
+        System.out.println("RegisterDID txHash:" + didPair.getTxHash());
+        System.out.println("RegisterDID signed:" + didPair.getSignedTx());
     }
 }

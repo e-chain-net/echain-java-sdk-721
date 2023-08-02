@@ -1,10 +1,7 @@
 package com.echain.util;
 
 import org.web3j.abi.FunctionEncoder;
-import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.Bool;
-import org.web3j.abi.datatypes.DynamicBytes;
-import org.web3j.abi.datatypes.Function;
+import org.web3j.abi.datatypes.*;
 import org.web3j.abi.datatypes.generated.Uint256;
 
 import java.math.BigInteger;
@@ -50,6 +47,15 @@ public class AbiUtil {
                 "setApprovalForAll",
                 Arrays.asList(new Address(operator),
                         new Bool(approved)),
+                Collections.emptyList());
+        return FunctionEncoder.encode(function);
+    }
+
+    public static String encodeRegisterDID(String id,String docUrl){
+        Function function = new Function(
+                "registerDID",
+                Arrays.asList(new Address(id),
+                        new Utf8String(docUrl)),
                 Collections.emptyList());
         return FunctionEncoder.encode(function);
     }
