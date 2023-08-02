@@ -46,6 +46,7 @@ public class TestSign {
         System.out.println("Transfer2 txHash:" + transferRes.getTxHash());
         System.out.println("Transfer2 signed:" + transferRes.getSignedTx());
 
+        //DID注册签名
         String didContractAddress = "0x11c7afd80560f72891df3ab8969e5b524d738f04";
         TxPair didPair = sdk.signRegisterDID(user1.getAddress(),"https://www.bing.com/?mkt=zh-CN",didContractAddress,owner.getPrivateKey(),blockNumber);
         System.out.println("RegisterDID txHash:" + didPair.getTxHash());
